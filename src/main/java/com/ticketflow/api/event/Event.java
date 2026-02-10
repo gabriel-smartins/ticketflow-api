@@ -1,5 +1,7 @@
 package com.ticketflow.api.event;
 
+import com.ticketflow.api.event.exception.ExceedsTotalSpotsException;
+import com.ticketflow.api.event.exception.NotEnoughSpotsException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -50,14 +52,14 @@ public class Event {
 
     public void decreaseSpots(int quantity) {
         if (availableSpots < quantity) {
-            throw new IllegalArgumentException("Not enough spots available");
+            throw new NotEnoughSpotsException("Not enough spots available for this purchase.");
         }
         this.availableSpots -= quantity;
     }
 
     public void increaseSpots(int quantity) {
         if (availableSpots + quantity > totalSpots) {
-            throw new IllegalArgumentException("Cannot exceeds total spots");
+            throw new ExceedsTotalSpotsException("Cannot add " + quantity + " spots. Max limits is " + totalSpots);
         }
         this.availableSpots += quantity;
     }

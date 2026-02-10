@@ -43,6 +43,11 @@ public class Event {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     public void decreaseSpots(int quantity) {
         if (availableSpots < quantity) {
             throw new IllegalArgumentException("Not enough spots available");

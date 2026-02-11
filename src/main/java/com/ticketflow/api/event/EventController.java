@@ -33,6 +33,15 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("{eventId}")
+    public ResponseEntity<EventResponseDTO> getEventDetails(@PathVariable UUID eventId) {
+
+        var event = eventService.getEventDetails(eventId);
+
+        return ResponseEntity.ok(EventResponseDTO.fromEntity(event));
+
+    }
+
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody CreateEventRequestDTO request, UriComponentsBuilder uriBuilder) {
         var createdEvent = eventService.createEvent(request);
@@ -48,4 +57,6 @@ public class EventController {
 
         return ResponseEntity.ok(updatedEvent);
     }
+
+
 }

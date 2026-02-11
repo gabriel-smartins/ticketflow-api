@@ -1,6 +1,7 @@
 package com.ticketflow.api.event;
 
 import com.ticketflow.api.event.dto.CreateEventRequestDTO;
+import com.ticketflow.api.event.exception.EventNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,15 @@ public class EventService {
         return eventRepository.save(newEvent);
     }
 
-    public Page<Event> fetchEvents(Pageable pageable){
+    @Transactional(readOnly = true)
+    public Page<Event> fetchEvents(Pageable pageable) {
         return eventRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Event getEventDetails(UUID eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Event not Found with ID: " + eventId));
     }
 
     @Transactional

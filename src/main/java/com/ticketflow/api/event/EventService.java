@@ -1,6 +1,8 @@
 package com.ticketflow.api.event;
 
-import com.ticketflow.api.event.dto.CreateEventRequest;
+import com.ticketflow.api.event.dto.CreateEventRequestDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +17,7 @@ public class EventService {
     }
 
     @Transactional
-    public Event createEvent(CreateEventRequest data) {
+    public Event createEvent(CreateEventRequestDTO data) {
         Event newEvent = Event.builder()
                 .title(data.title())
                 .description(data.description())
@@ -27,6 +29,10 @@ public class EventService {
                 .build();
 
         return eventRepository.save(newEvent);
+    }
+
+    public Page<Event> fetchEvents(Pageable pageable){
+        return eventRepository.findAll(pageable);
     }
 
     @Transactional

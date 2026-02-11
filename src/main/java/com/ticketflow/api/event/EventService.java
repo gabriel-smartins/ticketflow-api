@@ -1,5 +1,6 @@
 package com.ticketflow.api.event;
 
+import com.ticketflow.api.event.dto.CreateEventRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,21 @@ public class EventService {
 
     public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
+    }
+
+    @Transactional
+    public Event createEvent(CreateEventRequest data) {
+        Event newEvent = Event.builder()
+                .title(data.title())
+                .description(data.description())
+                .date(data.date())
+                .location(data.location())
+                .totalSpots(data.totalSpots())
+                .availableSpots(data.totalSpots())
+                .price(data.price())
+                .build();
+
+        return eventRepository.save(newEvent);
     }
 
     @Transactional

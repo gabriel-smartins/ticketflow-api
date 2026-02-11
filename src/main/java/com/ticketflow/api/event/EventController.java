@@ -58,5 +58,10 @@ public class EventController {
         return ResponseEntity.ok(updatedEvent);
     }
 
+    @PostMapping("/{eventId}/refund")
+    public ResponseEntity<Void> refundTicket(@PathVariable UUID eventId) {
+        eventService.refundTicket(eventId);
 
+        return ResponseEntity.noContent().build();
+    }
 }

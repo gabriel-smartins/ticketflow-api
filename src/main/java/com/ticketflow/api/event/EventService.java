@@ -47,11 +47,22 @@ public class EventService {
     public Event buyTicket(int quantity, UUID eventId) {
 
         var event = eventRepository.findByIdWithLock(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+                .orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + eventId));
 
         event.decreaseSpots(quantity);
 
         return eventRepository.save(event);
 
+    }
+
+    @Transactional
+    public void refundTicket(UUID eventId) {
+
+        var event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + eventId));
+
+        event.increaseSpots(1);
+
+        eventRepository.save(event);
     }
 }

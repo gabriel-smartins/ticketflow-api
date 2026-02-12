@@ -4,6 +4,7 @@ import com.ticketflow.api.event.exception.EventNotFoundException;
 import com.ticketflow.api.event.exception.ExceedsTotalSpotsException;
 import com.ticketflow.api.event.exception.NotEnoughSpotsException;
 import com.ticketflow.api.ticket.exception.TicketAlreadyCanceledException;
+import com.ticketflow.api.ticket.exception.TicketNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,7 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Event not found");
         problemDetail.setType(URI.create("https://ticketflow.com/errors/event-not-found"));
         problemDetail.setProperty("timestamp", Instant.now());
+
         return problemDetail;
     }
 
@@ -30,6 +32,7 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Business Rule Violation");
         problemDetail.setType(URI.create("https://ticketflow.com/errors/not-enough-spots"));
         problemDetail.setProperty("timestamp", Instant.now());
+
         return problemDetail;
     }
 
@@ -48,6 +51,16 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
         problemDetail.setTitle("Ticket already canceled.");
         problemDetail.setType(URI.create("https://ticketflow.com/errors/ticket-already-canceled"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(TicketNotFoundException.class)
+    public ProblemDetail handleTicketNotFoundException(TicketNotFoundException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        problemDetail.setTitle("Ticket not found");
+        problemDetail.setType(URI.create("https://ticketflow.com/errors/ticket-not-found"));
         problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;

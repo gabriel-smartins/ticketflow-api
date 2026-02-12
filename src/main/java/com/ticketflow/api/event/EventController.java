@@ -3,6 +3,8 @@ package com.ticketflow.api.event;
 import com.ticketflow.api.event.dto.CreateEventRequestDTO;
 import com.ticketflow.api.event.dto.EventResponseDTO;
 import com.ticketflow.api.event.dto.PurchaseRequestDTO;
+import com.ticketflow.api.ticket.Ticket;
+import com.ticketflow.api.ticket.dto.TicketResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -52,10 +54,12 @@ public class EventController {
     }
 
     @PostMapping("/{eventId}/purchase")
-    public ResponseEntity<Event> buyTicket(@PathVariable UUID eventId, @RequestBody PurchaseRequestDTO request) {
-        Event updatedEvent = eventService.buyTicket(request.quantity(), eventId);
+    public ResponseEntity<TicketResponseDTO> buyTicket(@PathVariable UUID eventId, @RequestBody PurchaseRequestDTO request, UriComponentsBuilder uriBuilder) {
+        var boughtTicket = eventService.buyTicket(request.quantity(), eventId, request.customerName(), request.customerEmail());
 
-        return ResponseEntity.ok(updatedEvent);
+        URI uri = uriBuilder.path("/tickets/{id}").buildAndExpand(boughtTicket.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(TicketResponseDTO.fromEntity(boughtTicket));
     }
 
     @PostMapping("/{eventId}/refund")

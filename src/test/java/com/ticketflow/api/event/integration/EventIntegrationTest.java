@@ -4,6 +4,7 @@ import com.ticketflow.api.config.BaseIntegrationTest;
 import com.ticketflow.api.event.Event;
 import com.ticketflow.api.event.EventRepository;
 import com.ticketflow.api.event.EventService;
+import com.ticketflow.api.ticket.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +26,12 @@ public class EventIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private TicketRepository ticketRepository;
+
     @BeforeEach
     void setup() {
+        ticketRepository.deleteAll();
         eventRepository.deleteAll();
     }
 
@@ -34,8 +39,7 @@ public class EventIntegrationTest extends BaseIntegrationTest {
     @DisplayName("Should prevent overbooking")
     void shouldPreventOverBooking() throws InterruptedException {
 
-        Event event = Event
-                .builder()
+        Event event = Event.builder()
                 .title("High Concurrency Event")
                 .description("Testing locks")
                 .date(LocalDateTime.now().plusDays(1))
@@ -47,20 +51,38 @@ public class EventIntegrationTest extends BaseIntegrationTest {
 
         eventRepository.save(event);
 
-        List<CompletableFuture<Void>> futures = IntStream.range(0, 100)
-                .mapToObj(i -> CompletableFuture.runAsync(() -> {
+        int numberOfThreads = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        List<? extends Future<?>> futures = IntStream.range(0, numberOfThreads)
+                .mapToObj(i -> executorService.submit(() -> {
                     try {
-                        eventService.buyTicket(1, event.getId());
+                        latch.await();
+
+                        eventService.buyTicket(1, event.getId(), "User " + i, "user" + i + "@test.com");
+
                     } catch (Exception e) {
+
                     }
                 }))
                 .toList();
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        latch.countDown();
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (ExecutionException e) {
+            }
+        }
+
+        executorService.shutdown();
 
         Event updatedEvent = eventRepository.findById(event.getId()).orElseThrow();
+        long ticketsSold = ticketRepository.count();
 
         assertThat(updatedEvent.getAvailableSpots()).isEqualTo(0);
 
+        assertThat(ticketsSold).isEqualTo(10);
     }
 }

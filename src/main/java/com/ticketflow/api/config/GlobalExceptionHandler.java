@@ -5,6 +5,7 @@ import com.ticketflow.api.event.exception.ExceedsTotalSpotsException;
 import com.ticketflow.api.event.exception.NotEnoughSpotsException;
 import com.ticketflow.api.ticket.exception.TicketAlreadyCanceledException;
 import com.ticketflow.api.ticket.exception.TicketNotFoundException;
+import com.ticketflow.api.user.exception.EmailAlreadyInUseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,6 +62,16 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
         problemDetail.setTitle("Ticket not found");
         problemDetail.setType(URI.create("https://ticketflow.com/errors/ticket-not-found"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EmailAlreadyInUseException.class)
+    public ProblemDetail handleEmailAlreadyInUseException(EmailAlreadyInUseException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+        problemDetail.setTitle("E-mail is already in use");
+        problemDetail.setType(URI.create("https://ticketflow.com/errors/email-already-in-use"));
         problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;

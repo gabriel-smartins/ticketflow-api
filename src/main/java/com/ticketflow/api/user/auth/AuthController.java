@@ -1,6 +1,8 @@
-package com.ticketflow.api.user;
+package com.ticketflow.api.user.auth;
 
 import com.ticketflow.api.config.TokenService;
+import com.ticketflow.api.user.User;
+import com.ticketflow.api.user.UserService;
 import com.ticketflow.api.user.dto.LoginRequestDTO;
 import com.ticketflow.api.user.dto.LoginResponseDTO;
 import com.ticketflow.api.user.dto.RegisterRequestDTO;
@@ -27,6 +29,8 @@ public class AuthController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 
         Authentication auth = authenticationManager.authenticate(usernamePassword);
+
+        var user = userService.getUserByEmail(auth.getName());
 
         String token = tokenService.generateToken((User) auth.getPrincipal());
 

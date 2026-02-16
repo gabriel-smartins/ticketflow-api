@@ -4,6 +4,7 @@ import com.ticketflow.api.user.dto.RegisterRequestDTO;
 import com.ticketflow.api.user.enums.UserRole;
 import com.ticketflow.api.user.exception.EmailAlreadyInUseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,4 +31,11 @@ public class UserService {
         return userRepository.save(newUser);
 
     }
+
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
 }

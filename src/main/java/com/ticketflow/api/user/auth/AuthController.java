@@ -28,11 +28,13 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 
-        Authentication auth = authenticationManager.authenticate(usernamePassword);
+        var auth = authenticationManager.authenticate(usernamePassword);
 
-        var user = userService.getUserByEmail(auth.getName());
+        var userDetails = (org.springframework.security.core.userdetails.UserDetails) auth.getPrincipal();
 
-        String token = tokenService.generateToken((User) auth.getPrincipal());
+        User user = userService.getUserByEmail(userDetails.getUsername());
+
+        String token = tokenService.generateToken(user);
 
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }

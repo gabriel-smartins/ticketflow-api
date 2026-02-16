@@ -5,6 +5,7 @@ import com.ticketflow.api.event.exception.EventNotFoundException;
 import com.ticketflow.api.ticket.Ticket;
 import com.ticketflow.api.ticket.TicketRepository;
 import com.ticketflow.api.ticket.exception.TicketNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,14 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
     private final TicketRepository ticketRepository;
-
-    public EventService(EventRepository eventRepository, TicketRepository ticketRepository) {
-        this.eventRepository = eventRepository;
-        this.ticketRepository = ticketRepository;
-    }
 
     @Transactional
     public Event createEvent(CreateEventRequestDTO data) {

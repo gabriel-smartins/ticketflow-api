@@ -1,6 +1,6 @@
 spring:
   application:
-    name=ticketflow-api
+    name: ticketflow-api
 
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:ticketflow_db}
@@ -25,3 +25,12 @@ spring:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}
+
+logging:
+  level:
+    org.springframework.security: DEBUG

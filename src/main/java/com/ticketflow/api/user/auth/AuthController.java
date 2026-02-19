@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,9 +29,7 @@ public class AuthController {
 
         var auth = authenticationManager.authenticate(usernamePassword);
 
-        var userDetails = (org.springframework.security.core.userdetails.UserDetails) auth.getPrincipal();
-
-        User user = userService.getUserByEmail(userDetails.getUsername());
+        var user = (User) auth.getPrincipal();
 
         String token = tokenService.generateToken(user);
 

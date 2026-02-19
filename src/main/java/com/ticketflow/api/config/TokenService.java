@@ -37,8 +37,17 @@ public class TokenService {
                 .getSubject();
     }
 
+    public String validateToken(String token) {
+        try {
+            return getSubject(token);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
+
 
 }

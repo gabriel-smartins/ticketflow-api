@@ -26,6 +26,16 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
 
+  data:
+    redis:
+      host: localhost
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 60000ms
+
+  cache:
+    type: redis
+
 api:
   security:
     token:

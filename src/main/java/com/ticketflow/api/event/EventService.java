@@ -1,11 +1,14 @@
 package com.ticketflow.api.event;
 
+import com.ticketflow.api.config.CustomPage;
 import com.ticketflow.api.event.dto.CreateEventRequestDTO;
 import com.ticketflow.api.event.exception.EventNotFoundException;
 import com.ticketflow.api.ticket.Ticket;
 import com.ticketflow.api.ticket.TicketRepository;
 import com.ticketflow.api.ticket.exception.TicketNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ public class EventService {
     private final TicketRepository ticketRepository;
 
     @Transactional
+    @CacheEvict(value = "eventsCache", allEntries = true)
     public Event createEvent(CreateEventRequestDTO data) {
         Event newEvent = Event.builder()
                 .title(data.title())
@@ -35,8 +39,11 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "eventsCache")
     public Page<Event> fetchEvents(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+        Page<Event> page = eventRepository.findAll(pageable);
+
+        return new CustomPage<>(page.getContent(), pageable, page.getTotalElements());
     }
 
     @Transactional(readOnly = true)
@@ -46,6 +53,7 @@ public class EventService {
     }
 
     @Transactional
+    @CacheEvict(value = "eventsCache", allEntries = true)
     public Ticket buyTicket(int quantity, UUID eventId, String customerName, String customerEmail) {
 
         var event = eventRepository.findByIdWithLock(eventId)
@@ -66,6 +74,7 @@ public class EventService {
     }
 
     @Transactional
+    @CacheEvict(value = "eventsCache", allEntries = true)
     public void refundTicket(UUID ticketId) {
 
         var ticket = ticketRepository.findById(ticketId)

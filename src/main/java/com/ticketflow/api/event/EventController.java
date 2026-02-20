@@ -5,6 +5,8 @@ import com.ticketflow.api.event.dto.EventResponseDTO;
 import com.ticketflow.api.event.dto.PurchaseRequestDTO;
 import com.ticketflow.api.ticket.Ticket;
 import com.ticketflow.api.ticket.dto.TicketResponseDTO;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

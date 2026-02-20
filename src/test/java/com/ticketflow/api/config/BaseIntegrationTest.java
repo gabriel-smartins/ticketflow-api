@@ -30,5 +30,7 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.flyway.url", postgres::getJdbcUrl);
         registry.add("spring.flyway.user", postgres::getUsername);
         registry.add("spring.flyway.password", postgres::getPassword);
+        registry.add("spring.cache.type", () -> "none");
+        registry.add("api.security.token.secret", () -> "um-segredo-muito-longo-e-seguro-apenas-para-os-testes-passarem-123");
     }
 }

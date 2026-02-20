@@ -63,7 +63,7 @@ public class EventIntegrationTest extends BaseIntegrationTest {
                         eventService.buyTicket(1, event.getId(), "User " + i, "user" + i + "@test.com");
 
                     } catch (Exception e) {
-
+                        e.printStackTrace();
                     }
                 }))
                 .toList();
